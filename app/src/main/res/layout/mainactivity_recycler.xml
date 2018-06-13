@@ -26,7 +26,8 @@
                 android:layout_height="wrap_content"
                 android:scaleType="center"
                 android:id="@+id/image"
-                android:src="@mipmap/ic_launcher"/>
+                android:src="@drawable/cell_phone_case_1"
+                />
 
 
         </RelativeLayout>

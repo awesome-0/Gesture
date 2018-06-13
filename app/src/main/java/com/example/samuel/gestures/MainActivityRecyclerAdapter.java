@@ -1,6 +1,7 @@
 package com.example.samuel.gestures;
 
 import android.content.Context;
+import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
@@ -20,7 +21,7 @@ public class MainActivityRecyclerAdapter extends RecyclerView.Adapter<MainActivi
 
 
     public MainActivityRecyclerAdapter(Context ctx , ArrayList<Product> products) {
-        this.products = products;
+        this.products.addAll(products);
         this.ctx = ctx;
     }
 
@@ -32,8 +33,18 @@ public class MainActivityRecyclerAdapter extends RecyclerView.Adapter<MainActivi
     }
 
     @Override
-    public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        Picasso.with(ctx).load(products.get(position).getImage()).fit().centerCrop().into(holder.productImage);
+    public void onBindViewHolder(@NonNull ViewHolder holder, final int position) {
+        Picasso.with(ctx).load(products.get(position).getImage()).resize(300,300).centerCrop()
+                .into(holder.productImage);
+        holder.cardView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(ctx,ViewProductActivity.class);
+                intent.putExtra(ctx.getString(R.string.product),products.get(position));
+                ctx.startActivity(intent);
+
+            }
+        });
 
 
 
@@ -41,7 +52,7 @@ public class MainActivityRecyclerAdapter extends RecyclerView.Adapter<MainActivi
 
     @Override
     public int getItemCount() {
-        return 0;
+        return products.size();
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder{

@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Gestures</string>
+    <string name="product">product</string>
 </resources>
