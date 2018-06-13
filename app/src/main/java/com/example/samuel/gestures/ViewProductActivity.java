@@ -9,22 +9,27 @@ import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.RelativeLayout;
 
 import java.util.ArrayList;
 
 public class ViewProductActivity extends AppCompatActivity
-        implements View.OnTouchListener,GestureDetector.OnGestureListener{
+        implements View.OnTouchListener,GestureDetector.OnGestureListener,
+GestureDetector.OnDoubleTapListener,View.OnClickListener{
     Product mProduct;
     ViewPager pager;
     TabLayout tab;
     private static final String TAG = "ViewProductActivity";
     GestureDetector mGestureDetector;
+    RelativeLayout addToCart;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_view_product);
         pager = findViewById(R.id.image_container);
+        addToCart = findViewById(R.id.add_to_cart);
+        addToCart.setOnClickListener(this);
         mGestureDetector = new GestureDetector(this,this);
         pager.setOnTouchListener(this);
 
@@ -40,6 +45,7 @@ public class ViewProductActivity extends AppCompatActivity
     private void setUpViewPager() {
         ArrayList<Fragment>fragments = new ArrayList<>();
         Products product = new Products();
+
 
 
 
@@ -95,5 +101,36 @@ public class ViewProductActivity extends AppCompatActivity
     public boolean onFling(MotionEvent motionEvent, MotionEvent motionEvent1, float v, float v1) {
         Log.d(TAG, "onTouch: ACTION_DOWN called");
         return false;
+    }
+
+    @Override
+    public boolean onSingleTapConfirmed(MotionEvent motionEvent) {
+        return false;
+    }
+
+    @Override
+    public boolean onDoubleTap(MotionEvent motionEvent) {
+        return false;
+    }
+
+    @Override
+    public boolean onDoubleTapEvent(MotionEvent motionEvent) {
+        return false;
+    }
+
+    @Override
+    public void onClick(View view) {
+        switch (view.getId()){
+            case R.id.add_to_cart :
+                // this is gets the adapter of the view pager and the current fragment and then returns the product in the current fragment
+                Product selectedProduct = ((ProductFragment)((fragmentAdapter)pager.getAdapter()).getItem(tab.getSelectedTabPosition())).product;
+                addProductToCart(selectedProduct);
+                break;
+        }
+    }
+
+    private void addProductToCart(Product selectedProduct) {
+        Cart cart = new Cart(this);
+        cart.addProductToCart(selectedProduct);
     }
 }

@@ -47,7 +47,7 @@ public class ProductFragment extends Fragment {
     }
 
     private void setProduct() {
-        Picasso.with(getActivity()).load(product.getImage()).fit().into(productImage);
+        Picasso.with(getActivity()).load(product.getImage()).fit().centerInside().into(productImage);
         Price.setText(product.getPrice().toString().substring(0,5));
         title.setText(product.getTitle());
 
