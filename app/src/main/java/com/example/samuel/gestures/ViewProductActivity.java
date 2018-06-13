@@ -9,6 +9,7 @@ import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
 import java.util.ArrayList;
@@ -95,6 +96,13 @@ GestureDetector.OnDoubleTapListener,View.OnClickListener{
     @Override
     public void onLongPress(MotionEvent motionEvent) {
         Log.d(TAG, "onTouch: onLongPress called");
+
+        Product product = ((ProductFragment)((fragmentAdapter)pager.getAdapter()).getItem(tab.getSelectedTabPosition())).product;
+
+        ImageView view = ((ProductFragment)((fragmentAdapter)pager.getAdapter()).getItem(tab.getSelectedTabPosition())).productImage;
+        //view.
+        View.DragShadowBuilder dragDropClass = new DragDropClass(view,product.getImage());
+        view.startDragAndDrop(null,dragDropClass,null,0);
     }
 
     @Override
