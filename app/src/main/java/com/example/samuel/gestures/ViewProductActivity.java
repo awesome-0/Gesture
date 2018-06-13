@@ -6,23 +6,28 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
 
 import java.util.ArrayList;
 
-public class ViewProductActivity extends AppCompatActivity  implements View.OnTouchListener{
+public class ViewProductActivity extends AppCompatActivity
+        implements View.OnTouchListener,GestureDetector.OnGestureListener{
     Product mProduct;
     ViewPager pager;
     TabLayout tab;
     private static final String TAG = "ViewProductActivity";
+    GestureDetector mGestureDetector;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_view_product);
         pager = findViewById(R.id.image_container);
+        mGestureDetector = new GestureDetector(this,this);
         pager.setOnTouchListener(this);
+
         tab = findViewById(R.id.tab);
         if(getIntent() != null && getIntent().hasExtra(getString(R.string.product))){
             mProduct = getIntent().getParcelableExtra(getString(R.string.product));
@@ -53,24 +58,42 @@ public class ViewProductActivity extends AppCompatActivity  implements View.OnTo
 
     @Override
     public boolean onTouch(View view, MotionEvent motionEvent) {
-        int action = motionEvent.getAction();
-        switch(action){
-            case MotionEvent.ACTION_DOWN:
-                Log.d(TAG, "onTouch: ACTION_DOWN called");
-                return false;
-            case MotionEvent.ACTION_UP:
-                Log.d(TAG, "onTouch: ACTION_UP called");
-                return false;
-            case MotionEvent.ACTION_CANCEL:
-                Log.d(TAG, "onTouch: ACTION_CANCEL called");
-                return false;
-            case MotionEvent.ACTION_MOVE:
-                Log.d(TAG, "onTouch: ACTION_MOVE called");
-                return false;
-            case MotionEvent.ACTION_OUTSIDE:
-                Log.d(TAG, "onTouch: ACTION_OUTSIDE called");
-                return false;
-        }
+        mGestureDetector.onTouchEvent(motionEvent);
+
+        return false;
+    }
+
+    @Override
+    public boolean onDown(MotionEvent motionEvent) {
+        Log.d(TAG, "onTouch: ACTION_DOWN called");
+        return false;
+    }
+
+    @Override
+    public void onShowPress(MotionEvent motionEvent) {
+        Log.d(TAG, "onTouch: onShowPress called");
+    }
+
+    @Override
+    public boolean onSingleTapUp(MotionEvent motionEvent) {
+        Log.d(TAG, "onTouch: onSingleTapUp called");
+        return false;
+    }
+
+    @Override
+    public boolean onScroll(MotionEvent motionEvent, MotionEvent motionEvent1, float v, float v1) {
+        Log.d(TAG, "onTouch: ACTIOonScroll called");
+        return false;
+    }
+
+    @Override
+    public void onLongPress(MotionEvent motionEvent) {
+        Log.d(TAG, "onTouch: onLongPress called");
+    }
+
+    @Override
+    public boolean onFling(MotionEvent motionEvent, MotionEvent motionEvent1, float v, float v1) {
+        Log.d(TAG, "onTouch: ACTION_DOWN called");
         return false;
     }
 }
