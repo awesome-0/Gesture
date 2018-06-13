@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.widget.RelativeLayout;
 //import android.R;
 
@@ -17,12 +18,17 @@ public class MainActivity extends AppCompatActivity {
 
  RecyclerView recyclerView;
  ArrayList<Product> mProducts = new ArrayList<>();
+ Toolbar toolbar;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
         recyclerView = findViewById(R.id.recycler_view);
+        toolbar = findViewById(R.id.toolbar);
+        toolbar.setTitle("Gestures");
+        setSupportActionBar(toolbar);
+
 
         mProducts.addAll(Arrays.asList(Products.FEATURED_PRODUCTS));
         initRecyclerView();
