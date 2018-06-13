@@ -13,12 +13,25 @@ public class Product implements Parcelable {
     private BigDecimal price;
     private int serial_number;
 
+
+
     public Product(String title, int image, String type, BigDecimal price, int serial_number) {
         this.title = title;
         this.image = image;
         this.type = type;
         this.price = price;
         this.serial_number = serial_number;
+    }
+
+    @Override
+    public String toString() {
+        return "Product{" +
+                "title='" + title + '\'' +
+                ", image=" + image +
+                ", type='" + type + '\'' +
+                ", price=" + price +
+                ", serial_number=" + serial_number +
+                '}';
     }
 
     public Product(Product product) {
