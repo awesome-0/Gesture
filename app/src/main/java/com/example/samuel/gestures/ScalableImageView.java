@@ -3,6 +3,7 @@ package com.example.samuel.gestures;
 import android.content.Context;
 import android.graphics.Matrix;
 import android.graphics.PointF;
+import android.graphics.drawable.Drawable;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.AppCompatImageView;
 import android.util.AttributeSet;
@@ -125,6 +126,49 @@ public class ScalableImageView extends AppCompatImageView implements View.OnTouc
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
         viewHeight = MeasureSpec.getSize(heightMeasureSpec);
         viewWidth = MeasureSpec.getSize(widthMeasureSpec);
+        if(mSaveScale == 1){
+            fitToScreen();
+        }
+    }
+    public void fitToScreen(){
+        // first set the scale to 1;
+        mSaveScale = 1;
+        Drawable drawable = getDrawable();
+        //now let us get the width and height of the drawable we are viewing
+        if(drawable == null || drawable.getIntrinsicHeight() == 0  ||drawable.getIntrinsicWidth() == 0){
+            return;
+        }
+        float dWidth = drawable.getIntrinsicWidth();
+        float dHeight = drawable.getIntrinsicHeight();
+        //now let us get the maximum scale along both x and y axis
+
+        float maxScaleX = (float)viewWidth / (float) dWidth;
+        float maxScaleY = (float)viewHeight / (float) dHeight;
+
+        //now we need to pick one to be our delimiting scale, so when that scale is met
+        //along that direction, the other direction cannot increase any further..
+        //giving that properly fitted look
+        float limitingScale = Math.min(maxScaleX,maxScaleY);
+        mMatrix.setScale(limitingScale,limitingScale);
+
+        // now let us try to center the image
+        // 1. get redundant y space
+        float redundantY = (float)viewHeight - ((float)(dHeight * limitingScale));
+        float redundantX = (float)viewWidth - ((float)(dWidth * limitingScale));
+
+        // now we divide the redundant values by 2 so it can be properly centered
+
+        redundantX /= 2;
+        redundantY /= 2;
+
+        mMatrix.postTranslate(redundantX,redundantY);
+
+        origHeight = viewHeight - 2* redundantY;
+        origWidth = viewWidth - 2* redundantX;
+        setImageMatrix(mMatrix);
+
+
+
     }
 
     private class Scalelistener extends ScaleGestureDetector.SimpleOnScaleGestureListener{
