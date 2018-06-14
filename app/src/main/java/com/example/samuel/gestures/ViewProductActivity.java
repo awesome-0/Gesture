@@ -5,7 +5,9 @@ import android.graphics.Rect;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.support.design.widget.TabLayout;
+import android.support.transition.Fade;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -15,6 +17,7 @@ import android.view.DragEvent;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
@@ -30,6 +33,7 @@ GestureDetector.OnDoubleTapListener,View.OnClickListener,View.OnDragListener{
     GestureDetector mGestureDetector;
     RelativeLayout addToCart,cart;
     ImageView mPlusIcon,mCart;
+    FrameLayout container;
 
     Product selectedProduct;
     Rect mRectangleCoordinate;
@@ -43,6 +47,7 @@ GestureDetector.OnDoubleTapListener,View.OnClickListener,View.OnDragListener{
         mPlusIcon = findViewById(R.id.plus_image);
         mCart = findViewById(R.id.cart_image);
         cart = findViewById(R.id.cart);
+        container = findViewById(R.id.full_screen_container);
         addToCart.setOnClickListener(this);
         mGestureDetector = new GestureDetector(this,this);
         pager.setOnTouchListener(this);
@@ -154,11 +159,29 @@ GestureDetector.OnDoubleTapListener,View.OnClickListener,View.OnDragListener{
 
     @Override
     public boolean onDoubleTap(MotionEvent motionEvent) {
+        selectedProduct = ((ProductFragment)((fragmentAdapter)pager.getAdapter()).getItem(tab.getSelectedTabPosition())).product;
+        Bundle bundle = new Bundle();
+        bundle.putParcelable(getString(R.string.product),selectedProduct);
+       // ProductFragment fragment  = ((ProductFragment)((fragmentAdapter)pager.getAdapter()).getItem(tab.getSelectedTabPosition()));//.setArguments(bundle);
+        fragmentViewFullScreen fragment = new fragmentViewFullScreen();
+        fragment.setArguments(bundle);
+
+        Fade enterFade = new Fade();
+        enterFade.setStartDelay(1);
+        enterFade.setDuration(300);
+        fragment.setEnterTransition(enterFade);
+
+
+        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+        transaction.replace(R.id.full_screen_container,fragment,"tag");
+                transaction.addToBackStack("fragment").commit();
+        Log.e(TAG, "onDoubleTap:  doubkle tap confirmed" );
         return false;
     }
 
     @Override
     public boolean onDoubleTapEvent(MotionEvent motionEvent) {
+        Log.e(TAG, "onDoubleTapEvent: om doublr tap event" );
         return false;
     }
 
