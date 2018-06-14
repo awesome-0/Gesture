@@ -90,7 +90,10 @@ public class ScalableImageView extends AppCompatImageView implements View.OnTouc
                     float permissibleDy = getDragDistance(changeInY,viewHeight,origHeight * mSaveScale);
                     float permissibleDx = getDragDistance(changeInX,viewWidth,origWidth * mSaveScale);
 
+
                     mMatrix.postTranslate(permissibleDx, permissibleDy);
+                    Log.e(TAG, "onTouch: mostRecentX from onTouch is  " + permissibleDx );
+
 
                     mLast.set(currentPoint.x,currentPoint.y);
                 }
@@ -100,14 +103,54 @@ public class ScalableImageView extends AppCompatImageView implements View.OnTouc
                     mode = NONE;
                     break;
 
-
-
-
-
         }
         setImageMatrix(mMatrix);
+        fixTranslation();
         return false;
     }
+
+    private void fixTranslation() {
+        mMatrix.getValues(matrixPoints);
+        float mostRecentX =  matrixPoints[Matrix.MTRANS_X];
+        float mostRecentY = matrixPoints[Matrix.MTRANS_Y];
+        Log.e(TAG, "fixTranslation: from fixTranslation, most recent X is  " + mostRecentX );
+
+
+        float correctionX =  getReturnTranslation(mostRecentX,viewWidth,origWidth * mSaveScale);
+        float correctionY = getReturnTranslation(mostRecentY,viewHeight,origHeight * mSaveScale);
+       // Log.e(TAG, "fixTranslation: correct translation is " + correctionTranslation );
+        if(correctionX != 0 || correctionY != 0) {
+            mMatrix.postTranslate(correctionX, correctionY);
+        }
+
+    }
+    float getReturnTranslation(float actualTranslation,float viewSize,float contentSize){
+        float min,max;
+
+        if(contentSize <= viewSize){//not yet zoomed
+            max = viewSize - contentSize;
+            min = 0;
+
+        }else{
+            max = 0;
+            min = viewSize - contentSize;// always negative
+        }
+
+
+
+
+       if(actualTranslation < min){
+           return -actualTranslation + min;
+       }
+       if(actualTranslation >max){
+           return -actualTranslation + max;
+       }
+        return 0;
+
+    }
+
+    // this method ensures that unless zoomed(view size becomes less than contentSize) ...
+    //there should be no translation in that direction
     private float getDragDistance(float change,float viewSize,float contentSize){
         if(contentSize <= viewSize){
             return 0;
@@ -196,7 +239,7 @@ public class ScalableImageView extends AppCompatImageView implements View.OnTouc
         // 1. get redundant y space
         float redundantY = (float) viewHeight - (limitingScale * (float) dHeight);
         float redundantX = (float) viewWidth - (limitingScale * (float) dWidth);
-        Log.e(TAG, "fitToScreen: redundant y is " + redundantY );
+
 
         // now we divide the redundant values by 2 so it can be properly centered
 
@@ -207,10 +250,7 @@ public class ScalableImageView extends AppCompatImageView implements View.OnTouc
 
         origHeight = viewHeight - (2 * redundantY);
         origWidth = viewWidth - (2* redundantX);
-        Log.e(TAG, "fitToScreen: original height is " + origHeight  );
-        Log.e(TAG, "fitToScreen: original width is " + origWidth );
-        Log.e(TAG, "fitToScreen: view width is" + viewWidth );
-        Log.e(TAG, "fitToScreen: view height is " + viewHeight );
+
         setImageMatrix(mMatrix);
 
 
@@ -254,11 +294,12 @@ public class ScalableImageView extends AppCompatImageView implements View.OnTouc
                 //the first two is for the increment in both x and y directions,
                 //while the last two is for the point of initiating the scaling
                 mMatrix.postScale(scaleFactor,scaleFactor,viewWidth/2,viewHeight/2);
-                Log.e(TAG, "onScale: zooming from the middle"   );
+
             }else{
                 mMatrix.postScale(scaleFactor,scaleFactor,detector.getFocusX(),detector.getFocusY());
-                Log.e(TAG, "onScale: scaling from elsewhere" );
+
             }
+            fixTranslation();
 
             return true;
         }
