@@ -70,8 +70,39 @@ public class ScalableImageView extends AppCompatImageView implements View.OnTouc
     @Override
     public boolean onTouch(View view, MotionEvent motionEvent) {
         //pass touch events to gesture and scaling detector
-        mGestureDetector.onTouchEvent(motionEvent);
         mScaleDetector.onTouchEvent(motionEvent);
+        mGestureDetector.onTouchEvent(motionEvent);
+
+        PointF currentPoint = new PointF(motionEvent.getX(),motionEvent.getY());
+
+        switch (motionEvent.getAction()){
+            case MotionEvent.ACTION_DOWN:
+                mLast.set(currentPoint);
+                mStart.set(mLast);
+                mode = DRAG;
+                break;
+
+            case MotionEvent.ACTION_MOVE:
+                if(mode == DRAG) {
+                    float changeInX = currentPoint.x - mLast.x;
+                    float changeInY = currentPoint.y - mLast.y;
+
+                    mMatrix.postTranslate(changeInX, changeInY);
+
+                    mLast.set(currentPoint.x,currentPoint.y);
+                }
+                break;
+
+                case MotionEvent.ACTION_UP:
+                    mode = NONE;
+                    break;
+
+
+
+
+
+        }
+        setImageMatrix(mMatrix);
         return false;
     }
 
@@ -113,6 +144,7 @@ public class ScalableImageView extends AppCompatImageView implements View.OnTouc
     }
     @Override
     public boolean onDoubleTap(MotionEvent motionEvent) {
+        fitToScreen();
         return false;
     }
 
@@ -138,8 +170,8 @@ public class ScalableImageView extends AppCompatImageView implements View.OnTouc
         if(drawable == null || drawable.getIntrinsicHeight() == 0  ||drawable.getIntrinsicWidth() == 0){
             return;
         }
-        float dWidth = drawable.getIntrinsicWidth();
-        float dHeight = drawable.getIntrinsicHeight();
+        int dWidth = drawable.getIntrinsicWidth();
+        int dHeight = drawable.getIntrinsicHeight();
         //now let us get the maximum scale along both x and y axis
 
         float maxScaleX = (float)viewWidth / (float) dWidth;
@@ -153,18 +185,23 @@ public class ScalableImageView extends AppCompatImageView implements View.OnTouc
 
         // now let us try to center the image
         // 1. get redundant y space
-        float redundantY = (float)viewHeight - ((float)(dHeight * limitingScale));
-        float redundantX = (float)viewWidth - ((float)(dWidth * limitingScale));
+        float redundantY = (float) viewHeight - (limitingScale * (float) dHeight);
+        float redundantX = (float) viewWidth - (limitingScale * (float) dWidth);
+        Log.e(TAG, "fitToScreen: redundant y is " + redundantY );
 
         // now we divide the redundant values by 2 so it can be properly centered
 
-        redundantX /= 2;
-        redundantY /= 2;
+        redundantX /= (float)2;
+        redundantY /= (float)2;
 
         mMatrix.postTranslate(redundantX,redundantY);
 
-        origHeight = viewHeight - 2* redundantY;
-        origWidth = viewWidth - 2* redundantX;
+        origHeight = viewHeight - (2 * redundantY);
+        origWidth = viewWidth - (2* redundantX);
+        Log.e(TAG, "fitToScreen: original height is " + origHeight  );
+        Log.e(TAG, "fitToScreen: original width is " + origWidth );
+        Log.e(TAG, "fitToScreen: view width is" + viewWidth );
+        Log.e(TAG, "fitToScreen: view height is " + viewHeight );
         setImageMatrix(mMatrix);
 
 
@@ -175,34 +212,35 @@ public class ScalableImageView extends AppCompatImageView implements View.OnTouc
         @Override
         public boolean onScale(ScaleGestureDetector detector) {
             //this is triggered upon any form of enlargement or shrinking action
-             super.onScale(detector);
+
             //get the scale factor .. its >1 for enlargement and <1 for shrinking
              float scaleFactor = detector.getScaleFactor();
              //at each instance, put the scale as original scale
-            Log.e(TAG, "onScale: current scale factor is " + scaleFactor );
-             float originalScale = mSaveScale;
+
+             float previousScale = mSaveScale;
              // input our new value for the save scale
-            Log.e(TAG, "onScale: previous save scale is " + mSaveScale );
+
              mSaveScale *= scaleFactor;
-              Log.e(TAG, "onScale: new  save scale is " + mSaveScale );
+
 
              // now check if the scale factor is more than max scale or less than min scale
             //scale factor tells the view how much we want to scale
 
             if(mSaveScale > mMaxScale){
                 mSaveScale = mMaxScale;
-                scaleFactor = mMaxScale/originalScale;
+                scaleFactor = mMaxScale/previousScale;
             }else if(mSaveScale < mMinScale){
                 mSaveScale = mMinScale;
-                scaleFactor = mMinScale/originalScale;
+                scaleFactor = mMinScale/previousScale;
             }
             /*
             this is checks to know if the view is occupying the whole view
             if its not occupying the whole view, we should be zooming from the middle of the view
              */
 
-            if(origWidth * scaleFactor <= viewWidth
-                    || origHeight * scaleFactor <= viewHeight){
+            if(origWidth * mSaveScale <= viewWidth
+                    || origHeight * mSaveScale <= viewHeight){
+
                 //the post scale method takes four parameters,
                 //the first two is for the increment in both x and y directions,
                 //while the last two is for the point of initiating the scaling
@@ -219,7 +257,7 @@ public class ScalableImageView extends AppCompatImageView implements View.OnTouc
 
         @Override
         public boolean onScaleBegin(ScaleGestureDetector detector) {
-             super.onScaleBegin(detector);
+
             mode = ZOOM;
             return true;
         }
