@@ -87,7 +87,10 @@ public class ScalableImageView extends AppCompatImageView implements View.OnTouc
                     float changeInX = currentPoint.x - mLast.x;
                     float changeInY = currentPoint.y - mLast.y;
 
-                    mMatrix.postTranslate(changeInX, changeInY);
+                    float permissibleDy = getDragDistance(changeInY,viewHeight,origHeight * mSaveScale);
+                    float permissibleDx = getDragDistance(changeInX,viewWidth,origWidth * mSaveScale);
+
+                    mMatrix.postTranslate(permissibleDx, permissibleDy);
 
                     mLast.set(currentPoint.x,currentPoint.y);
                 }
@@ -104,6 +107,12 @@ public class ScalableImageView extends AppCompatImageView implements View.OnTouc
         }
         setImageMatrix(mMatrix);
         return false;
+    }
+    private float getDragDistance(float change,float viewSize,float contentSize){
+        if(contentSize <= viewSize){
+            return 0;
+        }
+        return change;
     }
 
     @Override
