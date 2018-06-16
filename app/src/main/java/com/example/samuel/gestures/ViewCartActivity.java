@@ -26,6 +26,7 @@ public class ViewCartActivity extends AppCompatActivity {
     CoordinatorLayout layout;
     private static final String TAG = "ViewCartActivity";
     public static final String[] HEADER_TITLES = {"Must Have", "Maybe", "Probably Not"};
+    private boolean isScrollling;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -103,6 +104,12 @@ public class ViewCartActivity extends AppCompatActivity {
         mProducts.addAll(new Cart(this).getProducts());
 
     }
+    public void setScrolling(boolean isScrollling){
+        this.isScrollling = isScrollling;
+    }
+    public boolean isScrolling(){
+        return isScrollling;
+    }
 
     private boolean isScrollable(){
         return mRecyclerView.computeVerticalScrollRange() > mRecyclerView.getHeight();
@@ -124,6 +131,8 @@ public class ViewCartActivity extends AppCompatActivity {
         @Override
         public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
             super.onScrollStateChanged(recyclerView, newState);
+            setScrolling(true);
+
         }
 
         @Override
@@ -137,6 +146,7 @@ public class ViewCartActivity extends AppCompatActivity {
                 }
 
             }
+            setScrolling(true);
         }
     }
 }

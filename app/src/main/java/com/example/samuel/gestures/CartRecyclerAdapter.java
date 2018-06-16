@@ -75,6 +75,7 @@ public class CartRecyclerAdapter  extends RecyclerView.Adapter<RecyclerView.View
                 @Override
                 public boolean onTouch(View view, MotionEvent motionEvent) {
                     if(motionEvent.getAction() == MotionEvent.ACTION_DOWN){
+                        ((ViewCartActivity)mContext).setScrolling(false);
                         viewholder =((ViewHolder)holder);
                         mGestureDetector.onTouchEvent(motionEvent);
                     }
@@ -141,8 +142,11 @@ public class CartRecyclerAdapter  extends RecyclerView.Adapter<RecyclerView.View
 
     @Override
     public void onLongPress(MotionEvent motionEvent) {
+        if(!((ViewCartActivity)mContext).isScrolling()){
+            itemTouchHelper.startDrag(viewholder);
+        }
 
-        itemTouchHelper.startDrag(viewholder);
+
     }
 
     @Override
