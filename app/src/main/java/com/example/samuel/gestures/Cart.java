@@ -2,6 +2,7 @@ package com.example.samuel.gestures;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.util.Log;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -14,6 +15,7 @@ public class Cart {
     private SharedPreferences mSharedPreferences;
     private SharedPreferences.Editor editor;
     private Context ctx;
+    private static final String TAG = "Cart";
 
     public Cart(Context ctx) {
         this.ctx = ctx;
@@ -31,13 +33,16 @@ public class Cart {
     }
     public ArrayList<Product> getProducts(){
         Set<String> cart = mSharedPreferences.getStringSet(ctx.getString(R.string.cart_items), new HashSet<String>());
+        Log.e(TAG, "getProducts: " + cart.size() );
         ArrayList<Product> prods = new ArrayList<>();
         HashMap<String, Product> products = Products.getProducts();//.get(nums);
         for(String nums: cart){
             prods.add(products.get(nums));
         }
 
+
         return prods;
+
     }
 
     public void deleteItem(Product product){

@@ -177,13 +177,13 @@ GestureDetector.OnDoubleTapListener,View.OnClickListener,View.OnDragListener{
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         transaction.replace(R.id.full_screen_container,fragment,"tag");
                 transaction.addToBackStack("fragment").commit();
-        Log.e(TAG, "onDoubleTap:  doubkle tap confirmed" );
+
         return false;
     }
 
     @Override
     public boolean onDoubleTapEvent(MotionEvent motionEvent) {
-        Log.e(TAG, "onDoubleTapEvent: om doublr tap event" );
+
         return false;
     }
 
@@ -191,8 +191,6 @@ GestureDetector.OnDoubleTapListener,View.OnClickListener,View.OnDragListener{
     public void onClick(View view) {
         switch (view.getId()){
             case R.id.add_to_cart :
-                // this is gets the adapter of the view pager and the current fragment and then returns the product in the current fragment
-
                 addProductToCart();
                 break;
 
@@ -205,6 +203,7 @@ GestureDetector.OnDoubleTapListener,View.OnClickListener,View.OnDragListener{
 
     private void addProductToCart() {
         Cart cart = new Cart(this);
+        Log.e(TAG, "addProductToCart: add to cart called by " + this  );
         selectedProduct = ((ProductFragment)((fragmentAdapter)pager.getAdapter()).getItem(tab.getSelectedTabPosition())).product;
         cart.addProductToCart(selectedProduct);
     }
@@ -258,7 +257,7 @@ GestureDetector.OnDoubleTapListener,View.OnClickListener,View.OnDragListener{
                 if(drawable instanceof ColorDrawable){
                     if(((ColorDrawable)drawable).getColor() == getResources().getColor(R.color.blue2)){
                         //at the point the drag ended, the plus icon was blue (user ended drag with the shadow still
-                        //on the plusIcon
+                        //on the plusIconadd
                         addProductToCart();
                     }
                 }
