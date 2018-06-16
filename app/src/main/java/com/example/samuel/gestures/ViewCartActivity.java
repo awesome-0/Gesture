@@ -1,17 +1,22 @@
 package com.example.samuel.gestures;
 
 import android.os.Build;
+import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.helper.ItemTouchHelper;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewTreeObserver;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 
 public class ViewCartActivity extends AppCompatActivity {
@@ -19,7 +24,9 @@ public class ViewCartActivity extends AppCompatActivity {
     private ArrayList<Product> mProducts = new ArrayList<>();
     private FloatingActionButton mFab;
     CartRecyclerAdapter adapter;
+    CoordinatorLayout layout;
     private static final String TAG = "ViewCartActivity";
+    public static final String[] HEADER_TITLES = {"Must Have", "Maybe", "Probably Not"};
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,12 +34,11 @@ public class ViewCartActivity extends AppCompatActivity {
         setContentView(R.layout.activity_view_cart);
         mRecyclerView =findViewById(R.id.recycler_view);
         mFab = findViewById(R.id.fab);
+        layout = findViewById(R.id.coord);
 
         getProductsFromCart();
-        adapter = new CartRecyclerAdapter(this,mProducts);
-        mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
-        mRecyclerView.setHasFixedSize(true);
-        mRecyclerView.setAdapter(adapter);
+        initRecyclerView();
+
         mRecyclerView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
             @Override
             public void onGlobalLayout() {
@@ -44,6 +50,31 @@ public class ViewCartActivity extends AppCompatActivity {
             }
         });
 
+        ItemTouchHelper helper = new ItemTouchHelper(new ItemTouchHelper.Callback() {
+            @Override
+            public int getMovementFlags(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder) {
+                return 0;
+            }
+
+            @Override
+            public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
+                return false;
+            }
+
+            @Override
+            public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
+
+                if(direction == ItemTouchHelper.LEFT || direction == ItemTouchHelper.RIGHT){
+                    new Cart(ViewCartActivity.this).deleteItem(mProducts.remove(viewHolder.getAdapterPosition()));
+                    Snackbar.make(layout,"Product deleted",Snackbar.LENGTH_LONG).show();
+                    initRecyclerView();
+
+                }
+
+            }
+        });
+
+
         mFab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -53,8 +84,19 @@ public class ViewCartActivity extends AppCompatActivity {
         Log.e(TAG, "onCreate:  number of products in cart is " + mProducts.size());
 
     }
+    void initRecyclerView(){
+        adapter = new CartRecyclerAdapter(this,mProducts);
+        mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        mRecyclerView.setHasFixedSize(true);
+        mRecyclerView.setAdapter(adapter);
+    }
 
     private void getProductsFromCart() {
+        //these contain the text that is used to inflate the different views before the main products
+        mProducts.add(new Product(HEADER_TITLES[0], 0, "", new BigDecimal(0), 0));
+        mProducts.add(new Product(HEADER_TITLES[1], 0, "", new BigDecimal(0), 0));
+        mProducts.add(new Product(HEADER_TITLES[2], 0, "", new BigDecimal(0), 0));
+        //these contain the major content
         mProducts.addAll(new Cart(this).getProducts());
 
     }
