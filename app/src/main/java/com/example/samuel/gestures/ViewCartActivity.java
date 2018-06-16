@@ -10,7 +10,6 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
 import android.util.Log;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewTreeObserver;
 import android.view.animation.Animation;
@@ -86,6 +85,10 @@ public class ViewCartActivity extends AppCompatActivity {
     }
     void initRecyclerView(){
         adapter = new CartRecyclerAdapter(this,mProducts);
+        ItemTouchHelperCallback touchAdapter = new ItemTouchHelperCallback(adapter);
+        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(touchAdapter);
+        adapter.setItemTouchHelper(itemTouchHelper);
+        itemTouchHelper.attachToRecyclerView(mRecyclerView);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         mRecyclerView.setHasFixedSize(true);
         mRecyclerView.setAdapter(adapter);

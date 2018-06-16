@@ -3,8 +3,11 @@ package com.example.samuel.gestures;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.helper.ItemTouchHelper;
 import android.text.TextUtils;
+import android.view.GestureDetector;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -14,17 +17,28 @@ import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 
-public class CartRecyclerAdapter  extends RecyclerView.Adapter<RecyclerView.ViewHolder>{
+public class CartRecyclerAdapter  extends RecyclerView.Adapter<RecyclerView.ViewHolder> implements ItemTouchHelperInterface
+        ,GestureDetector.OnGestureListener{
     ArrayList<Product> mProducts;
     Context mContext;
     private int HEADER = 1;
     private int PRODUCT = 2;
+    ItemTouchHelper itemTouchHelper;
+    GestureDetector mGestureDetector;
+    ViewHolder viewholder;
+
 
 
     public CartRecyclerAdapter( Context mContext,ArrayList<Product> mProducts) {
         this.mProducts = mProducts;
         this.mContext = mContext;
+        mGestureDetector = new GestureDetector(mContext,this);
     }
+
+    void setItemTouchHelper(ItemTouchHelper helper){
+        itemTouchHelper = helper;
+    }
+
 
     @NonNull
     @Override
@@ -32,6 +46,7 @@ public class CartRecyclerAdapter  extends RecyclerView.Adapter<RecyclerView.View
         View view;
         if(viewType == HEADER){
             view = LayoutInflater.from(mContext).inflate(R.layout.cart_headers,parent,false);
+
 
             return new HeaderViewHolder(view);
 
@@ -45,7 +60,7 @@ public class CartRecyclerAdapter  extends RecyclerView.Adapter<RecyclerView.View
     }
 
     @Override
-    public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull final RecyclerView.ViewHolder holder, int position) {
 
        int type = getItemViewType(position);
         if(type == HEADER){
@@ -53,9 +68,20 @@ public class CartRecyclerAdapter  extends RecyclerView.Adapter<RecyclerView.View
 
         }else{
             Product currentProd = mProducts.get(position);
-            ((ViewHolder)holder).title.setText(currentProd.getTitle());
+            viewholder =((ViewHolder)holder);
+                    ((ViewHolder)holder).title.setText(currentProd.getTitle());
             ((ViewHolder)holder).Price.setText(currentProd.getPrice().toString().substring(0,5));
+            ((ViewHolder)holder).itemView.setOnTouchListener(new View.OnTouchListener() {
+                @Override
+                public boolean onTouch(View view, MotionEvent motionEvent) {
+                    if(motionEvent.getAction() == MotionEvent.ACTION_DOWN){
+                        viewholder =((ViewHolder)holder);
+                        mGestureDetector.onTouchEvent(motionEvent);
+                    }
 
+                    return false;
+                }
+            });
               Picasso.with(mContext).load(currentProd.getImage()).resize(200,200).into(((ViewHolder)holder).productImage);
         }
 
@@ -75,6 +101,53 @@ public class CartRecyclerAdapter  extends RecyclerView.Adapter<RecyclerView.View
         }else{
             return PRODUCT;
         }
+    }
+
+    @Override
+    public void onItemMoved(int from, int to) {
+        Product prod = mProducts.get(from);
+
+        mProducts.remove(from);
+        mProducts.add(to,prod);
+        notifyItemMoved(from,to);
+
+
+    }
+
+    @Override
+    public void onSwiped(int position) {
+
+    }
+
+    @Override
+    public boolean onDown(MotionEvent motionEvent) {
+        return false;
+    }
+
+    @Override
+    public void onShowPress(MotionEvent motionEvent) {
+
+    }
+
+    @Override
+    public boolean onSingleTapUp(MotionEvent motionEvent) {
+        return false;
+    }
+
+    @Override
+    public boolean onScroll(MotionEvent motionEvent, MotionEvent motionEvent1, float v, float v1) {
+        return false;
+    }
+
+    @Override
+    public void onLongPress(MotionEvent motionEvent) {
+
+        itemTouchHelper.startDrag(viewholder);
+    }
+
+    @Override
+    public boolean onFling(MotionEvent motionEvent, MotionEvent motionEvent1, float v, float v1) {
+        return false;
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder{

@@ -203,7 +203,7 @@ GestureDetector.OnDoubleTapListener,View.OnClickListener,View.OnDragListener{
 
     private void addProductToCart() {
         Cart cart = new Cart(this);
-        Log.e(TAG, "addProductToCart: add to cart called by " + this  );
+       // Log.e(TAG, "addProductToCart: add to cart called by " + this  );
         selectedProduct = ((ProductFragment)((fragmentAdapter)pager.getAdapter()).getItem(tab.getSelectedTabPosition())).product;
         cart.addProductToCart(selectedProduct);
     }
