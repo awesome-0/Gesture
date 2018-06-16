@@ -116,7 +116,13 @@ public class CartRecyclerAdapter  extends RecyclerView.Adapter<RecyclerView.View
     }
 
     @Override
-    public void onSwiped(int position) {
+    public void onSwiped(int position,int productPostion) {
+        Cart cart = new Cart(mContext);
+
+        Product prod = mProducts.get(productPostion);
+        cart.deleteItem(prod);
+        mProducts.remove(productPostion);
+        notifyItemRemoved(productPostion);
 
     }
 
