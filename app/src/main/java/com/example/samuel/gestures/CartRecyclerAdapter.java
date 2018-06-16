@@ -2,6 +2,7 @@ package com.example.samuel.gestures;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
+import android.support.design.widget.Snackbar;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
 import android.text.TextUtils;
@@ -26,13 +27,16 @@ public class CartRecyclerAdapter  extends RecyclerView.Adapter<RecyclerView.View
     ItemTouchHelper itemTouchHelper;
     GestureDetector mGestureDetector;
     ViewHolder viewholder;
+    Product deletedProduct;
+    deleteProductInterface deleteProductInterface;
 
 
 
-    public CartRecyclerAdapter( Context mContext,ArrayList<Product> mProducts) {
+    public CartRecyclerAdapter( Context mContext,ArrayList<Product> mProducts,deleteProductInterface deleteInterface) {
         this.mProducts = mProducts;
         this.mContext = mContext;
         mGestureDetector = new GestureDetector(mContext,this);
+        deleteProductInterface = deleteInterface;
     }
 
     void setItemTouchHelper(ItemTouchHelper helper){
@@ -119,10 +123,12 @@ public class CartRecyclerAdapter  extends RecyclerView.Adapter<RecyclerView.View
     public void onSwiped(int position,int productPostion) {
         Cart cart = new Cart(mContext);
 
-        Product prod = mProducts.get(productPostion);
-        cart.deleteItem(prod);
+        deletedProduct = mProducts.get(productPostion);
+        cart.deleteItem(deletedProduct);
         mProducts.remove(productPostion);
         notifyItemRemoved(productPostion);
+        deleteProductInterface.showSnackBar(deletedProduct,productPostion);
+
 
     }
 

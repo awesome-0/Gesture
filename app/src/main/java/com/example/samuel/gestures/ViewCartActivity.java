@@ -18,7 +18,7 @@ import android.view.animation.AnimationUtils;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 
-public class ViewCartActivity extends AppCompatActivity {
+public class ViewCartActivity extends AppCompatActivity  implements deleteProductInterface{
     private RecyclerView mRecyclerView;
     private ArrayList<Product> mProducts = new ArrayList<>();
     private FloatingActionButton mFab;
@@ -85,7 +85,7 @@ public class ViewCartActivity extends AppCompatActivity {
 
     }
     void initRecyclerView(){
-        adapter = new CartRecyclerAdapter(this,mProducts);
+        adapter = new CartRecyclerAdapter(this,mProducts,this);
         ItemTouchHelperCallback touchAdapter = new ItemTouchHelperCallback(adapter);
         ItemTouchHelper itemTouchHelper = new ItemTouchHelper(touchAdapter);
         adapter.setItemTouchHelper(itemTouchHelper);
@@ -127,6 +127,19 @@ public class ViewCartActivity extends AppCompatActivity {
         }
 
     }
+
+    @Override
+    public void showSnackBar(final Product product, final int position) {
+        Snackbar.make(layout,"Undo deletion?",Snackbar.LENGTH_LONG).setAction("Undo", new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                ((CartRecyclerAdapter)adapter).mProducts.add(position,product);
+                adapter.notifyItemInserted(position);
+            }
+        }).show();
+    }
+
     private class ScrollListener extends RecyclerView.OnScrollListener{
         @Override
         public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
