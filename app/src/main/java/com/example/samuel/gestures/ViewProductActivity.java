@@ -1,5 +1,6 @@
 package com.example.samuel.gestures;
 
+import android.content.Intent;
 import android.graphics.Point;
 import android.graphics.Rect;
 import android.graphics.drawable.ColorDrawable;
@@ -47,6 +48,7 @@ GestureDetector.OnDoubleTapListener,View.OnClickListener,View.OnDragListener{
         mPlusIcon = findViewById(R.id.plus_image);
         mCart = findViewById(R.id.cart_image);
         cart = findViewById(R.id.cart);
+        cart.setOnClickListener(this);
         container = findViewById(R.id.full_screen_container);
         addToCart.setOnClickListener(this);
         mGestureDetector = new GestureDetector(this,this);
@@ -192,6 +194,11 @@ GestureDetector.OnDoubleTapListener,View.OnClickListener,View.OnDragListener{
                 // this is gets the adapter of the view pager and the current fragment and then returns the product in the current fragment
 
                 addProductToCart();
+                break;
+
+            case R.id.cart:
+                Intent intent = new Intent(this,ViewCartActivity.class);
+                startActivity(intent);
                 break;
         }
     }
