@@ -57,29 +57,7 @@ public class ViewCartActivity extends AppCompatActivity  implements deleteProduc
             }
         });
 
-        ItemTouchHelper helper = new ItemTouchHelper(new ItemTouchHelper.Callback() {
-            @Override
-            public int getMovementFlags(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder) {
-                return 0;
-            }
 
-            @Override
-            public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
-                return false;
-            }
-
-            @Override
-            public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
-
-                if(direction == ItemTouchHelper.LEFT || direction == ItemTouchHelper.RIGHT){
-                    new Cart(ViewCartActivity.this).deleteItem(mProducts.remove(viewHolder.getAdapterPosition()));
-                    Snackbar.make(layout,"Product deleted",Snackbar.LENGTH_LONG).show();
-                    initRecyclerView();
-
-                }
-
-            }
-        });
 
 
         mFab.setOnClickListener(new View.OnClickListener() {
@@ -88,13 +66,17 @@ public class ViewCartActivity extends AppCompatActivity  implements deleteProduc
                 mRecyclerView.smoothScrollToPosition(0);
             }
         });
-        Log.e(TAG, "onCreate:  number of products in cart is " + mProducts.size());
+
 
     }
     void initRecyclerView(){
         adapter = new CartRecyclerAdapter(this,mProducts,this);
+        // we create a touch helper callback class that takes the adapter as a parameter
+        //so it can directly control the adapter in terms of removing and adding objects
         ItemTouchHelperCallback touchAdapter = new ItemTouchHelperCallback(adapter);
+        // we create an item touch helper so we can pass it to the adapter for the dragging effect
         ItemTouchHelper itemTouchHelper = new ItemTouchHelper(touchAdapter);
+
         adapter.setItemTouchHelper(itemTouchHelper);
         itemTouchHelper.attachToRecyclerView(mRecyclerView);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
@@ -119,6 +101,7 @@ public class ViewCartActivity extends AppCompatActivity  implements deleteProduc
     }
 
     private boolean isScrollable(){
+        // this checks whether the recycler view is full enough to be scrollable
         return mRecyclerView.computeVerticalScrollRange() > mRecyclerView.getHeight();
     }
 
@@ -148,6 +131,7 @@ public class ViewCartActivity extends AppCompatActivity  implements deleteProduc
     }
 
     private class ScrollListener extends RecyclerView.OnScrollListener{
+        // this class is to know when the user is scrolling and has reached the bottom
         @Override
         public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
             super.onScrollStateChanged(recyclerView, newState);

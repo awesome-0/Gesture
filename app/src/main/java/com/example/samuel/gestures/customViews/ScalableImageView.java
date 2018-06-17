@@ -142,11 +142,14 @@ public class ScalableImageView extends AppCompatImageView implements View.OnTouc
         float min,max;
 
         if(contentSize <= viewSize){//not yet zoomed
-            //mostly applies to 
+            // as long as the user has not yet zoomed in
+            // calculate the difference between view size and content size
+            // this helps us know by how much we should compensate to block out the black background
             max = viewSize - contentSize;
             min = 0;
 
         }else{
+            //now the user has zoomed in ...so that negative distance that has been covered in that direction
             max = 0;
             min = viewSize - contentSize;// always negative
         }
@@ -155,11 +158,17 @@ public class ScalableImageView extends AppCompatImageView implements View.OnTouc
 
 
        if(actualTranslation < min){
+            //here when zoomed,the user has gone beyond the permissible scrollable distance
+           // return the permissible scroll distance(min) - the actual user translation
            return -actualTranslation + min;
        }
        if(actualTranslation >max){
+            //here, the user has not fully zoomed in the direction.... so correct by
+           // max - actualTranslation
            return -actualTranslation + max;
        }
+       // if the user still swipes within the permissible view bounds
+        //no need for correction
         return 0;
 
     }

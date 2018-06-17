@@ -35,8 +35,8 @@ public class ItemTouchHelperCallback extends ItemTouchHelper.Callback {
 
     @Override
     public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
+        //pass swipe position to the adapter
         mAdapter.onSwiped(direction,viewHolder.getAdapterPosition());
-
 
     }
 
@@ -54,6 +54,7 @@ public class ItemTouchHelperCallback extends ItemTouchHelper.Callback {
     @Override
     public void clearView(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder) {
         super.clearView(recyclerView, viewHolder);
+        //called when there is a release ...
         viewHolder.itemView.setBackgroundColor(Color.WHITE);
 
     }

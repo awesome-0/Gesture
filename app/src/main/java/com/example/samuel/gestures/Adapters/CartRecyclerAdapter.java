@@ -25,7 +25,7 @@ import java.util.ArrayList;
 
 public class CartRecyclerAdapter  extends RecyclerView.Adapter<RecyclerView.ViewHolder> implements ItemTouchHelperInterface
         ,GestureDetector.OnGestureListener{
-    ArrayList<Product> mProducts;
+    public ArrayList<Product> mProducts;
     Context mContext;
     private int HEADER = 1;
     private int PRODUCT = 2;
@@ -44,7 +44,7 @@ public class CartRecyclerAdapter  extends RecyclerView.Adapter<RecyclerView.View
         deleteProductInterface = deleteInterface;
     }
 
-    void setItemTouchHelper(ItemTouchHelper helper){
+    public void setItemTouchHelper(ItemTouchHelper helper){
         itemTouchHelper = helper;
     }
 
@@ -53,6 +53,7 @@ public class CartRecyclerAdapter  extends RecyclerView.Adapter<RecyclerView.View
     @Override
     public RecyclerView.ViewHolder  onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view;
+        // we inflate views based on what type they are so we can have some sort of heterogenous view
         if(viewType == HEADER){
             view = LayoutInflater.from(mContext).inflate(R.layout.cart_headers,parent,false);
 
@@ -86,6 +87,7 @@ public class CartRecyclerAdapter  extends RecyclerView.Adapter<RecyclerView.View
                     if(motionEvent.getAction() == MotionEvent.ACTION_DOWN){
                         ((ViewCartActivity)mContext).setScrolling(false);
                         viewholder =((ViewHolder)holder);
+                        //pass the event to the gestire detector ...so we can use the long press method
                         mGestureDetector.onTouchEvent(motionEvent);
                     }
 
@@ -159,6 +161,7 @@ public class CartRecyclerAdapter  extends RecyclerView.Adapter<RecyclerView.View
 
     @Override
     public void onLongPress(MotionEvent motionEvent) {
+        // this is why we need the touch helper so we can use its start Drag Method
         if(!((ViewCartActivity)mContext).isScrolling()){
             itemTouchHelper.startDrag(viewholder);
         }
