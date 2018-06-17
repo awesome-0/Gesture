@@ -1,4 +1,4 @@
-package com.example.samuel.gestures;
+package com.example.samuel.gestures.Adapters;
 
 import android.content.Context;
 import android.content.Intent;
@@ -10,6 +10,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
+import com.example.samuel.gestures.Activities.ViewProductActivity;
+import com.example.samuel.gestures.Models.Product;
+import com.example.samuel.gestures.R;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;

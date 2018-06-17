@@ -1,4 +1,4 @@
-package com.example.samuel.gestures;
+package com.example.samuel.gestures.Activities;
 
 import android.os.Build;
 import android.support.design.widget.CoordinatorLayout;
@@ -15,10 +15,17 @@ import android.view.ViewTreeObserver;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 
+import com.example.samuel.gestures.Utils.Cart;
+import com.example.samuel.gestures.Adapters.CartRecyclerAdapter;
+import com.example.samuel.gestures.ItemTouchHelperCallback;
+import com.example.samuel.gestures.Models.Product;
+import com.example.samuel.gestures.R;
+import com.example.samuel.gestures.interfaces.deleteProductInterface;
+
 import java.math.BigDecimal;
 import java.util.ArrayList;
 
-public class ViewCartActivity extends AppCompatActivity  implements deleteProductInterface{
+public class ViewCartActivity extends AppCompatActivity  implements deleteProductInterface {
     private RecyclerView mRecyclerView;
     private ArrayList<Product> mProducts = new ArrayList<>();
     private FloatingActionButton mFab;

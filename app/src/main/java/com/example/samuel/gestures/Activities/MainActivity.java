@@ -1,19 +1,21 @@
-package com.example.samuel.gestures;
+package com.example.samuel.gestures.Activities;
 
 import android.content.Intent;
-import android.support.annotation.Nullable;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
-import android.widget.RelativeLayout;
 //import android.R;
+
+import com.example.samuel.gestures.Adapters.MainActivityRecyclerAdapter;
+import com.example.samuel.gestures.Models.Product;
+import com.example.samuel.gestures.Models.Products;
+import com.example.samuel.gestures.R;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -46,6 +48,7 @@ public class MainActivity extends AppCompatActivity {
             public void onRefresh() {
                 Log.e(TAG, "onRefresh: " + mProducts.get(0).toString() );
 
+                //just to simulate the idea of a network call that returns different results
                 Collections.shuffle(mProducts, new Random(45));
                 OnItemsLoadComplete();
 

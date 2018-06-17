@@ -1,4 +1,4 @@
-package com.example.samuel.gestures;
+package com.example.samuel.gestures.Adapters;
 
 
 import android.support.v4.app.Fragment;

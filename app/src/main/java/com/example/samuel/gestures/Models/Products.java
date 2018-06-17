@@ -1,4 +1,6 @@
-package com.example.samuel.gestures;
+package com.example.samuel.gestures.Models;
+
+import com.example.samuel.gestures.R;
 
 import java.math.BigDecimal;
 import java.util.HashMap;

@@ -1,4 +1,4 @@
-package com.example.samuel.gestures;
+package com.example.samuel.gestures.interfaces;
 
 public interface ItemTouchHelperInterface {
     void onItemMoved(int from, int to);

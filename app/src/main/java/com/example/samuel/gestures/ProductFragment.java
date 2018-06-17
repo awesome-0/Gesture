@@ -11,15 +11,16 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.example.samuel.gestures.Models.Product;
 import com.squareup.picasso.Picasso;
 
 public class ProductFragment extends Fragment {
-    ImageView productImage;
+    public ImageView productImage;
     TextView Price;
     TextView title;
     private static final String TAG = "ProductFragment";
 
-    Product product;
+    public Product product;
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

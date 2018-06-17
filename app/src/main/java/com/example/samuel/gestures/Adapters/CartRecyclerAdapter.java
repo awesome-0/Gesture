@@ -1,8 +1,7 @@
-package com.example.samuel.gestures;
+package com.example.samuel.gestures.Adapters;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
-import android.support.design.widget.Snackbar;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
 import android.text.TextUtils;
@@ -14,6 +13,12 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.example.samuel.gestures.Activities.ViewCartActivity;
+import com.example.samuel.gestures.Utils.Cart;
+import com.example.samuel.gestures.interfaces.ItemTouchHelperInterface;
+import com.example.samuel.gestures.Models.Product;
+import com.example.samuel.gestures.R;
+import com.example.samuel.gestures.interfaces.deleteProductInterface;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
@@ -28,7 +33,7 @@ public class CartRecyclerAdapter  extends RecyclerView.Adapter<RecyclerView.View
     GestureDetector mGestureDetector;
     ViewHolder viewholder;
     Product deletedProduct;
-    deleteProductInterface deleteProductInterface;
+    com.example.samuel.gestures.interfaces.deleteProductInterface deleteProductInterface;
 
 
 

@@ -4,6 +4,9 @@ import android.graphics.Color;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
 
+import com.example.samuel.gestures.Adapters.CartRecyclerAdapter;
+import com.example.samuel.gestures.interfaces.ItemTouchHelperInterface;
+
 public class ItemTouchHelperCallback extends ItemTouchHelper.Callback {
     ItemTouchHelperInterface mAdapter;
 

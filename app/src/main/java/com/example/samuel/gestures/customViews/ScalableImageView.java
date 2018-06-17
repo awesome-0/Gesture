@@ -1,4 +1,4 @@
-package com.example.samuel.gestures;
+package com.example.samuel.gestures.customViews;
 
 import android.content.Context;
 import android.graphics.Matrix;
@@ -17,10 +17,15 @@ import android.widget.ImageView;
 public class ScalableImageView extends AppCompatImageView implements View.OnTouchListener,
         GestureDetector.OnGestureListener,
         GestureDetector.OnDoubleTapListener{
+    /*
+    to understand the whole idea of the scaling process... start from the scale listener
+     */
     private static final String TAG = "ScalableImageView";
     Context mContext;
+    //these are the detectors we need.
     ScaleGestureDetector mScaleDetector;
     GestureDetector mGestureDetector ;
+    // this is to assist we scaling and translating the image
     float[] matrixPoints;
     Matrix mMatrix;
 
@@ -59,6 +64,7 @@ public class ScalableImageView extends AppCompatImageView implements View.OnTouc
         //make sure the image is clickable
         super.setClickable(true);
         //set up other widgets
+        // the scale gesture listener tells the app what to do whenever there is any scaling process
         mScaleDetector = new ScaleGestureDetector(ctx,new Scalelistener());
         mMatrix = new Matrix();
         matrixPoints = new float[9];
@@ -86,15 +92,17 @@ public class ScalableImageView extends AppCompatImageView implements View.OnTouc
                 if(mode == DRAG) {
                     float changeInX = currentPoint.x - mLast.x;
                     float changeInY = currentPoint.y - mLast.y;
+                    //when the image is moved, we try to get the maximum permissible distance that the image can move ...
+                    //both horizontally and vertically...
+                    //once the the user scales and the image now exceeds its original size in either direction
+                    // only then should we permit any sort of movement
 
                     float permissibleDy = getDragDistance(changeInY,viewHeight,origHeight * mSaveScale);
                     float permissibleDx = getDragDistance(changeInX,viewWidth,origWidth * mSaveScale);
 
 
+                    //this will only work if the image has been zoomed in either distance
                     mMatrix.postTranslate(permissibleDx, permissibleDy);
-                    Log.e(TAG, "onTouch: mostRecentX from onTouch is  " + permissibleDx );
-
-
                     mLast.set(currentPoint.x,currentPoint.y);
                 }
                 break;
@@ -110,15 +118,21 @@ public class ScalableImageView extends AppCompatImageView implements View.OnTouc
     }
 
     private void fixTranslation() {
+        // without this method call, once the user zooms in ...
+        //and the whole screen is covered by the image, the user can now drag and the black background showing
+        //what this method does is that once the image is fully zoomed and the user drags to a point where it reveals the black screen
+        // do some sort of reverse translation just enough in that direction to remove out the black background
+
+
+        // this call here stores the value of the most recent operations in done on the matrix,
+        // so we can test if the user has gone beyond bounds
         mMatrix.getValues(matrixPoints);
         float mostRecentX =  matrixPoints[Matrix.MTRANS_X];
         float mostRecentY = matrixPoints[Matrix.MTRANS_Y];
-        Log.e(TAG, "fixTranslation: from fixTranslation, most recent X is  " + mostRecentX );
-
 
         float correctionX =  getReturnTranslation(mostRecentX,viewWidth,origWidth * mSaveScale);
         float correctionY = getReturnTranslation(mostRecentY,viewHeight,origHeight * mSaveScale);
-       // Log.e(TAG, "fixTranslation: correct translation is " + correctionTranslation );
+
         if(correctionX != 0 || correctionY != 0) {
             mMatrix.postTranslate(correctionX, correctionY);
         }
@@ -128,6 +142,7 @@ public class ScalableImageView extends AppCompatImageView implements View.OnTouc
         float min,max;
 
         if(contentSize <= viewSize){//not yet zoomed
+            //mostly applies to 
             max = viewSize - contentSize;
             min = 0;
 
@@ -149,9 +164,10 @@ public class ScalableImageView extends AppCompatImageView implements View.OnTouc
 
     }
 
-    // this method ensures that unless zoomed(view size becomes less than contentSize) ...
-    //there should be no translation in that direction
+
     private float getDragDistance(float change,float viewSize,float contentSize){
+        // this method ensures that unless zoomed(view size becomes less than contentSize) ...
+        //there should be no translation in that direction
         if(contentSize <= viewSize){
             return 0;
         }
@@ -196,6 +212,7 @@ public class ScalableImageView extends AppCompatImageView implements View.OnTouc
     }
     @Override
     public boolean onDoubleTap(MotionEvent motionEvent) {
+        //we fit the image to screen
         fitToScreen();
         return false;
     }
@@ -219,18 +236,23 @@ public class ScalableImageView extends AppCompatImageView implements View.OnTouc
         mSaveScale = 1;
         Drawable drawable = getDrawable();
         //now let us get the width and height of the drawable we are viewing
+        // make sure you put the null check, because sometimes, it may take a while for the drawable to come up
+        //this should be done to avoid potential null pointer errors
         if(drawable == null || drawable.getIntrinsicHeight() == 0  ||drawable.getIntrinsicWidth() == 0){
             return;
         }
+
+        //now get the drawable width and height of our drawable
         int dWidth = drawable.getIntrinsicWidth();
         int dHeight = drawable.getIntrinsicHeight();
-        //now let us get the maximum scale along both x and y axis
 
+        //now let us get the maximum scale along both x and y axis
+        // this tells us how much we can scale in either direction
         float maxScaleX = (float)viewWidth / (float) dWidth;
         float maxScaleY = (float)viewHeight / (float) dHeight;
 
-        //now we need to pick one to be our delimiting scale, so when that scale is met
-        //along that direction, the other direction cannot increase any further..
+        //now we need to pick one to be our delimiting scale, so when that limiting scale is met...
+        //along that direction, the other direction cannot be scaled any further...
         //giving that properly fitted look
         float limitingScale = Math.min(maxScaleX,maxScaleY);
         mMatrix.setScale(limitingScale,limitingScale);
@@ -246,8 +268,12 @@ public class ScalableImageView extends AppCompatImageView implements View.OnTouc
         redundantX /= (float)2;
         redundantY /= (float)2;
 
+        // the post translate method tells the view where to put the image from the starting point
+        //we want it evenly spaced out both vertically and horizontally
+
         mMatrix.postTranslate(redundantX,redundantY);
 
+        //this is where we calculate the original height and width of our drawable
         origHeight = viewHeight - (2 * redundantY);
         origWidth = viewWidth - (2* redundantX);
 
@@ -266,36 +292,45 @@ public class ScalableImageView extends AppCompatImageView implements View.OnTouc
              float scaleFactor = detector.getScaleFactor();
              //at each instance, put the scale as original scale
 
+            //at initial value, our savedImage scale is 1 ... so the image is the exact size
              float previousScale = mSaveScale;
-             // input our new value for the save scale
 
+
+             //this tells us how much the user either enlarges or shrinks the image
              mSaveScale *= scaleFactor;
 
 
              // now check if the scale factor is more than max scale or less than min scale
-            //scale factor tells the view how much we want to scale
 
             if(mSaveScale > mMaxScale){
+                // so the image can only go 4 times its size
                 mSaveScale = mMaxScale;
                 scaleFactor = mMaxScale/previousScale;
             }else if(mSaveScale < mMinScale){
+                //the image can never go less than its original size
                 mSaveScale = mMinScale;
                 scaleFactor = mMinScale/previousScale;
             }
+            // at this point , out scale is within specified limits
+
+
             /*
             this is checks to know if the view is occupying the whole view
             if its not occupying the whole view, we should be zooming from the middle of the view
              */
 
+            //our original width and height is calculated when our image properly fits the screen
             if(origWidth * mSaveScale <= viewWidth
                     || origHeight * mSaveScale <= viewHeight){
 
                 //the post scale method takes four parameters,
-                //the first two is for the increment in both x and y directions,
+                //the first two is for the increment(in terms of scalefactor) in both x and y directions,
                 //while the last two is for the point of initiating the scaling
+                // so we want to start enlarging from the middle when the black background is still showing
                 mMatrix.postScale(scaleFactor,scaleFactor,viewWidth/2,viewHeight/2);
 
             }else{
+                // when we have passed the view width and view height, start zooming in from the point where the user is touching it
                 mMatrix.postScale(scaleFactor,scaleFactor,detector.getFocusX(),detector.getFocusY());
 
             }

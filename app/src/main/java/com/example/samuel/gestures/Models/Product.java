@@ -1,4 +1,4 @@
-package com.example.samuel.gestures;
+package com.example.samuel.gestures.Models;
 
 import android.os.Parcel;
 import android.os.Parcelable;

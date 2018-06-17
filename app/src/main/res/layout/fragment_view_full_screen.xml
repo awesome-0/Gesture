@@ -4,10 +4,10 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/Black"
-    tools:context=".fragmentViewFullScreen">
+    tools:context=".customViews.fragmentViewFullScreen">
 
     <!-- TODO: Update blank fragment layout -->
-   <com.example.samuel.gestures.ScalableImageView
+   <com.example.samuel.gestures.customViews.ScalableImageView
        android:layout_width="match_parent"
        android:layout_height="match_parent"
        android:id="@+id/scalable_image"/>

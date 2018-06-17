@@ -1,9 +1,13 @@
-package com.example.samuel.gestures;
+package com.example.samuel.gestures.Utils;
 
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.util.Log;
 import android.widget.Toast;
+
+import com.example.samuel.gestures.Models.Product;
+import com.example.samuel.gestures.Models.Products;
+import com.example.samuel.gestures.R;
 
 import java.util.ArrayList;
 import java.util.HashMap;

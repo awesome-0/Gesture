@@ -1,4 +1,4 @@
-package com.example.samuel.gestures;
+package com.example.samuel.gestures.Activities;
 
 import android.content.Intent;
 import android.graphics.Point;
@@ -21,6 +21,15 @@ import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
+
+import com.example.samuel.gestures.Utils.Cart;
+import com.example.samuel.gestures.customViews.DragDropClass;
+import com.example.samuel.gestures.Models.Product;
+import com.example.samuel.gestures.ProductFragment;
+import com.example.samuel.gestures.Models.Products;
+import com.example.samuel.gestures.R;
+import com.example.samuel.gestures.Adapters.fragmentAdapter;
+import com.example.samuel.gestures.customViews.fragmentViewFullScreen;
 
 import java.util.ArrayList;
 
@@ -64,12 +73,9 @@ GestureDetector.OnDoubleTapListener,View.OnClickListener,View.OnDragListener{
     }
 
     private void setUpViewPager() {
+        //this just fetches all products from the simulated database that match this type
         ArrayList<Fragment>fragments = new ArrayList<>();
         Products product = new Products();
-
-
-
-
         Product[] products = product.PRODUCT_MAP.get(mProduct.getType());
         for(Product prod : products){
             ProductFragment fragment = new ProductFragment();
@@ -85,16 +91,15 @@ GestureDetector.OnDoubleTapListener,View.OnClickListener,View.OnDragListener{
 
     @Override
     public boolean onTouch(View view, MotionEvent motionEvent) {
+        //after instantiating the gesture detector, we pass the user event to the gesture detector
         mGestureDetector.onTouchEvent(motionEvent);
+        //here, we try to get the coordinate of the cart icon so we can know where to drop the drag shadow created
         getAddIconCoord();
-
-
-
-
         return false;
     }
 
     private void getAddIconCoord() {
+        // all of this code is to get the width of the screen, getting the height is really easy cos its at position 0
         mRectangleCoordinate = new Rect();
         // this stores the coordinate of the view on the Rect Object
         cart.getGlobalVisibleRect(mRectangleCoordinate);
@@ -114,7 +119,7 @@ GestureDetector.OnDoubleTapListener,View.OnClickListener,View.OnDragListener{
 
     @Override
     public boolean onDown(MotionEvent motionEvent) {
-        Log.d(TAG, "onTouch: ACTION_DOWN called");
+
         return false;
     }
 
@@ -125,32 +130,33 @@ GestureDetector.OnDoubleTapListener,View.OnClickListener,View.OnDragListener{
 
     @Override
     public boolean onSingleTapUp(MotionEvent motionEvent) {
-        Log.d(TAG, "onTouch: onSingleTapUp called");
+
         return false;
     }
 
     @Override
     public boolean onScroll(MotionEvent motionEvent, MotionEvent motionEvent1, float v, float v1) {
-        Log.d(TAG, "onTouch: ACTIOonScroll called");
+
         return false;
     }
 
     @Override
     public void onLongPress(MotionEvent motionEvent) {
-        Log.d(TAG, "onTouch: onLongPress called");
-
+        //once long press is activated we now create our drag shadow
         Product product = ((ProductFragment)((fragmentAdapter)pager.getAdapter()).getItem(tab.getSelectedTabPosition())).product;
 
         ImageView view = ((ProductFragment)((fragmentAdapter)pager.getAdapter()).getItem(tab.getSelectedTabPosition())).productImage;
-        //view.
+        //Create a drag shadow after long press is activated
+        //look into the drag shadow class to understand how its built
         View.DragShadowBuilder dragDropClass = new DragDropClass(view,product.getImage());
+        // we pass null cos we are not passing any data along with the view
         view.startDragAndDrop(null,dragDropClass,null,0);
         dragDropClass.getView().setOnDragListener(this);
     }
 
     @Override
     public boolean onFling(MotionEvent motionEvent, MotionEvent motionEvent1, float v, float v1) {
-        Log.d(TAG, "onTouch: ACTION_DOWN called");
+
         return false;
     }
 
@@ -161,19 +167,22 @@ GestureDetector.OnDoubleTapListener,View.OnClickListener,View.OnDragListener{
 
     @Override
     public boolean onDoubleTap(MotionEvent motionEvent) {
+        // when the user double taps, we get the selected product
         selectedProduct = ((ProductFragment)((fragmentAdapter)pager.getAdapter()).getItem(tab.getSelectedTabPosition())).product;
         Bundle bundle = new Bundle();
+        //send the selected product to the inflated fragment
         bundle.putParcelable(getString(R.string.product),selectedProduct);
-       // ProductFragment fragment  = ((ProductFragment)((fragmentAdapter)pager.getAdapter()).getItem(tab.getSelectedTabPosition()));//.setArguments(bundle);
         fragmentViewFullScreen fragment = new fragmentViewFullScreen();
         fragment.setArguments(bundle);
 
+        //just some animation
         Fade enterFade = new Fade();
         enterFade.setStartDelay(1);
         enterFade.setDuration(300);
         fragment.setEnterTransition(enterFade);
 
 
+        //now create your full blown fragment
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         transaction.replace(R.id.full_screen_container,fragment,"tag");
                 transaction.addToBackStack("fragment").commit();
@@ -203,7 +212,6 @@ GestureDetector.OnDoubleTapListener,View.OnClickListener,View.OnDragListener{
 
     private void addProductToCart() {
         Cart cart = new Cart(this);
-       // Log.e(TAG, "addProductToCart: add to cart called by " + this  );
         selectedProduct = ((ProductFragment)((fragmentAdapter)pager.getAdapter()).getItem(tab.getSelectedTabPosition())).product;
         cart.addProductToCart(selectedProduct);
     }
@@ -214,7 +222,7 @@ GestureDetector.OnDoubleTapListener,View.OnClickListener,View.OnDragListener{
         switch(event.getAction()) {
 
             case DragEvent.ACTION_DRAG_STARTED:
-                Log.d(TAG, "onDrag: drag started.");
+
 
                 setDragMode(true);
 
@@ -225,11 +233,12 @@ GestureDetector.OnDoubleTapListener,View.OnClickListener,View.OnDragListener{
                 return true;
 
             case DragEvent.ACTION_DRAG_LOCATION:
-
+                // this action here gives us the points being covered by the image during the drag
                 Point point = new Point(Math.round(event.getX()),Math.round(event.getY()));
 
 
                 if(mRectangleCoordinate.contains(point.x,point.y)){
+                    //our rectangle coordinates was calculated during on touch
                     //user is inside the top right corner
                     cart.setBackground(this.getResources().getDrawable(R.color.blue2));
 
@@ -245,12 +254,12 @@ GestureDetector.OnDoubleTapListener,View.OnClickListener,View.OnDragListener{
 
             case DragEvent.ACTION_DROP:
 
-                Log.d(TAG, "onDrag: dropped.");
+
 
                 return true;
 
             case DragEvent.ACTION_DRAG_ENDED:
-                Log.d(TAG, "onDrag: ended.");
+
                 // now we will check with the colour of the plusIcon if the user dropped it there or elsewhere
 
                 Drawable drawable = cart.getBackground();
@@ -275,6 +284,7 @@ GestureDetector.OnDoubleTapListener,View.OnClickListener,View.OnDragListener{
     }
 
     private void setDragMode(boolean isDragging) {
+        //helper method to ensure that the plus icon is showing during drag only
         if(isDragging){
             mCart.setVisibility(View.INVISIBLE);
             mPlusIcon.setVisibility(View.VISIBLE);

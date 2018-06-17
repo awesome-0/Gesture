@@ -1,4 +1,4 @@
-package com.example.samuel.gestures;
+package com.example.samuel.gestures.customViews;
 
 
 import android.os.Bundle;
@@ -8,6 +8,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.example.samuel.gestures.Models.Product;
+import com.example.samuel.gestures.R;
 import com.squareup.picasso.Picasso;
 
 
@@ -16,6 +18,9 @@ import com.squareup.picasso.Picasso;
  */
 public class fragmentViewFullScreen extends Fragment {
     Product selectedProduct;
+    // from our layout, to leverage the power of scaling and other features..s
+    //we use our own custom image view
+
     ScalableImageView imageView;
 
 
