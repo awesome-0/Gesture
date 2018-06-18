@@ -3,7 +3,7 @@
 ### Gestures
 
 ## Objective
-Learn how to take advantage of the gestures in android to assist in scaling an images, dragging views as well as creating drag shadows 
+Learn how to take advantage of the gestures in android to assist in scaling images, dragging views as well as creating drag shadows 
 to enhance the user experience
 
 
